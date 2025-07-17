@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moonlit - Recovery Starts Here</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'teal': {
+                            500: '#14b8a6',
+                            600: '#0d9488',
+                            700: '#0f766e'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .screen {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease-in-out;
+        }
+
+        .screen.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, #14b8a6 0%, #14b8a6 16.67%, #e5e7eb 16.67%, #e5e7eb 100%);
+        }
+
+        .chat-bubble-sent {
+            background: #14b8a6;
+            color: white;
+            margin-left: 20%;
+            border-radius: 18px 18px 4px 18px;
+        }
+
+        .chat-bubble-received {
+            background: #f3f4f6;
+            color: #374151;
+            margin-right: 20%;
+            border-radius: 18px 18px 18px 4px;
+        }
+
+        .points-badge {
+            background: linear-gradient(45deg, #10b981, #14b8a6);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .roulette-wheel {
+            position: relative;
+            width: 16rem;
+            height: 16rem;
+            border-radius: 50%;
+            border: 8px solid #d1d5db;
+            background: conic-gradient(from 0deg,
+                    #ef4444 0deg 36deg,
+                    /* $5 - 10% */
+                    #22c55e 36deg 72deg,
+                    /* $10 - 10% */
+                    #ef4444 72deg 108deg,
+                    /* $5 - 10% */
+                    #22c55e 108deg 144deg,
+                    /* $15 - 10% */
+                    #ef4444 144deg 180deg,
+                    /* $5 - 10% */
+                    #22c55e 180deg 216deg,
+                    /* $10 - 10% */
+                    #ef4444 216deg 252deg,
+                    /* $5 - 10% */
+                    #8b5cf6 252deg 288deg,
+                    /* $25 - 10% */
+                    #ef4444 288deg 324deg,
+                    /* $5 - 10% */
+                    #f59e0b 324deg 360deg
+                    /* $30 - 10% */
+                );
+            transition: transform 3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .roulette-numbers {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+        }
+
+        .roulette-number {
+            position: absolute;
+            color: white;
+            font-weight: bold;
+            font-size: 0.875rem;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+            width: 2rem;
+            height: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            top: 50%;
+            left: 50%;
+        }
+
+        .roulette-number:nth-child(1) {
+            transform: translate(-50%, -50%) rotate(18deg) translateY(-5rem) rotate(-18deg);
+        }
+
+        .roulette-number:nth-child(2) {
+            transform: translate(-50%, -50%) rotate(54deg) translateY(-5rem) rotate(-54deg);
+        }
+
+        .roulette-number:nth-child(3) {
+            transform: translate(-50%, -50%) rotate(90deg) translateY(-5rem) rotate(-90deg);
+        }
+
+        .roulette-number:nth-child(4) {
+            transform: translate(-50%, -50%) rotate(126deg) translateY(-5rem) rotate(-126deg);
+        }
+
+        .roulette-number:nth-child(5) {
+            transform: translate(-50%, -50%) rotate(162deg) translateY(-5rem) rotate(-162deg);
+        }
+
+        .roulette-number:nth-child(6) {
+            transform: translate(-50%, -50%) rotate(198deg) translateY(-5rem) rotate(-198deg);
+        }
+
+        .roulette-number:nth-child(7) {
+            transform: translate(-50%, -50%) rotate(234deg) translateY(-5rem) rotate(-234deg);
+        }
+
+        .roulette-number:nth-child(8) {
+            transform: translate(-50%, -50%) rotate(270deg) translateY(-5rem) rotate(-270deg);
+        }
+
+        .roulette-number:nth-child(9) {
+            transform: translate(-50%, -50%) rotate(306deg) translateY(-5rem) rotate(-306deg);
+        }
+
+        .roulette-number:nth-child(10) {
+            transform: translate(-50%, -50%) rotate(342deg) translateY(-5rem) rotate(-342deg);
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 font-sans">
+    <div class="max-w-sm mx-auto bg-white min-h-screen shadow-lg relative">
+
+        <!-- Login Screen -->
+        <section id="login" class="screen active p-8 text-center h-screen flex flex-col justify-center">
+            <div class="mb-12">
+                <div class="w-20 h-20 bg-teal-500 rounded-full mx-auto mb-6 flex items-center justify-center">
+                    <span class="text-3xl text-white">🌙</span>
+                </div>
+                <h1 class="text-3xl font-bold text-gray-800 mb-4">Recovery Starts Here</h1>
+                <p class="text-gray-600 text-lg">Connect with your care team and earn rewards</p>
+            </div>
+
+            <div class="space-y-4 mb-8">
+                <input type="email" id="loginEmail" placeholder="Email address"
+                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                    value="patient1@test.com">
+                <input type="password" id="loginPassword" placeholder="Password"
+                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                    value="test123">
+            </div>
+
+            <button onclick="login()"
+                class="w-full bg-teal-500 text-white py-4 px-6 rounded-xl text-lg font-semibold hover:bg-teal-600 transition-colors">
+                Sign In
+            </button>
+
+            <div id="loginError" class="mt-4 text-red-500 text-sm hidden"></div>
+        </section>
+
+        <!-- Dashboard Screen -->
+        <section id="dashboard" class="screen p-6 h-screen flex flex-col">
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">Welcome back, <span id="userName">John</span>!</h2>
+                <p class="text-sm text-gray-600">Your recovery journey continues</p>
+            </div>
+
+            <div class="bg-gradient-to-r from-teal-500 to-teal-600 rounded-xl p-6 text-white mb-6">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-lg">Total Points</span>
+                    <span class="text-3xl font-bold" id="pointsDisplay">0</span>
+                </div>
+                <div class="text-center">
+                    <button id="rouletteBtn" onclick="checkRoulette()"
+                        class="bg-white text-teal-600 px-6 py-2 rounded-full font-semibold hover:bg-gray-100 transition-colors">
+                        🎰 Spin Roulette (25 pts)
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex-1 space-y-4">
+                <div class="bg-green-50 rounded-lg p-4 border border-green-200">
+                    <h3 class="font-semibold text-green-800 mb-2">Daily Drug Test</h3>
+                    <p class="text-sm text-green-600 mb-3">Complete your saliva test to earn 15 points</p>
+                    <button onclick="startDrugTest()"
+                        class="bg-green-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-green-600 transition-colors">
+                        🧪 Start Test
+                    </button>
+                </div>
+
+                <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                    <h3 class="font-semibold text-blue-800 mb-2">Support Chat</h3>
+                    <p class="text-sm text-blue-600 mb-3">Connect with your care team</p>
+                    <button onclick="navigateTo('messages')"
+                        class="bg-blue-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-600 transition-colors">
+                        💬 Open Chat
+                    </button>
+                </div>
+
+                <div class="bg-purple-50 rounded-lg p-4 border border-purple-200">
+                    <h3 class="font-semibold text-purple-800 mb-2">Your Progress</h3>
+                    <p class="text-sm text-purple-600 mb-3">Track your recovery journey</p>
+                    <div class="flex justify-between text-sm">
+                        <span>Tests completed:</span>
+                        <span id="testCount">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="logout()"
+                class="w-full mt-4 border border-gray-300 text-gray-700 py-3 px-6 rounded-xl text-lg font-semibold hover:bg-gray-50 transition-colors">
+                Sign Out
+            </button>
+        </section>
+
+        <!-- Messages Screen -->
+        <section id="messages" class="screen p-6 h-screen flex flex-col">
+            <div class="mb-6">
+                <button onclick="navigateTo('dashboard')" class="text-teal-500 mb-4">← Back</button>
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">Support Chat</h2>
+                <p class="text-sm text-gray-600">Your care team and pod members</p>
+            </div>
+
+            <div class="flex-1 space-y-3 mb-4 overflow-y-auto" id="messagesContainer">
+                <!-- Messages loaded from API -->
+            </div>
+
+            <div class="flex space-x-2">
+                <input type="text" id="messageInput" placeholder="Type a message..."
+                    class="flex-1 p-3 border border-gray-300 rounded-full focus:ring-2 focus:ring-teal-500">
+                <button onclick="sendMessage()" class="bg-teal-500 text-white px-4 py-3 rounded-full">
+                    Send
+                </button>
+            </div>
+        </section>
+
+        <!-- Drug Test Success Screen -->
+        <section id="testSuccess" class="screen p-6 h-screen flex flex-col justify-center">
+            <div class="text-center">
+                <div class="text-8xl mb-4">🎉</div>
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">Test Complete!</h2>
+                <div class="points-badge text-white py-3 px-6 rounded-full inline-block mb-4">
+                    <span class="font-bold text-lg">+15 Points Earned!</span>
+                </div>
+                <p class="text-gray-600 mb-8">Great job staying clean!</p>
+                <button onclick="navigateTo('dashboard')"
+                    class="w-full bg-teal-500 text-white py-4 px-6 rounded-xl text-lg font-semibold hover:bg-teal-600 transition-colors">
+                    Back to Dashboard
+                </button>
+            </div>
+        </section>
+
+        <!-- Roulette Modal -->
+        <div id="rouletteModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+            <div class="max-w-sm mx-auto bg-white h-full flex flex-col justify-center p-6">
+                <div class="text-center mb-8">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Reward Roulette!</h2>
+                    <p class="text-gray-600">Cost: 25 points</p>
+                </div>
+
+                <div class="relative mb-8">
+                    <div id="rouletteWheel" class="roulette-wheel mx-auto">
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <div class="w-4 h-4 bg-white rounded-full z-10"></div>
+                        </div>
+                        <div class="roulette-numbers">
+                            <div class="roulette-number">$5</div>
+                            <div class="roulette-number">$10</div>
+                            <div class="roulette-number">$5</div>
+                            <div class="roulette-number">$15</div>
+                            <div class="roulette-number">$5</div>
+                            <div class="roulette-number">$10</div>
+                            <div class="roulette-number">$5</div>
+                            <div class="roulette-number">$25</div>
+                            <div class="roulette-number">$5</div>
+                            <div class="roulette-number">$30</div>
+                        </div>
+                    </div>
+                    <div class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1 z-20">
+                        <div
+                            class="w-0 h-0 border-l-4 border-r-4 border-b-8 border-l-transparent border-r-transparent border-b-gray-800">
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="spinRoulette()" id="spinButton"
+                    class="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white py-4 rounded-xl text-lg font-bold mb-4">
+                    🎰 Spin Now! 🎰
+                </button>
+
+                <button onclick="closeRoulette()"
+                    class="w-full border border-gray-300 text-gray-700 py-3 rounded-xl font-semibold">
+                    Cancel
+                </button>
+
+                <div id="spinResult" class="hidden mt-6 text-center">
+                    <div class="text-6xl mb-2">🎊</div>
+                    <h3 class="text-2xl font-bold text-green-600 mb-2" id="winAmount">YOU WON $15!</h3>
+                    <p class="text-gray-600 mb-4">Money added to your account!</p>
+                    <button onclick="closeRoulette()" class="bg-teal-500 text-white px-6 py-3 rounded-lg font-semibold">
+                        Awesome!
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Screen -->
+        <div id="loadingScreen" class="fixed inset-0 bg-white hidden z-50 flex items-center justify-center">
+            <div class="text-center">
+                <div
+                    class="w-16 h-16 bg-teal-500 rounded-full mx-auto mb-4 flex items-center justify-center animate-pulse">
+                    <span class="text-2xl text-white">🌙</span>
+                </div>
+                <p class="text-gray-600">Loading...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // API Configuration
+        const API_BASE = 'https://moonlit-api-v2.vercel.app/api';
+        let authToken = null;
+        let currentUser = null;
+        let currentPoints = 0;
+        let testCount = 0;
+
+        // Navigation function
+        function navigateTo(screenId) {
+            const currentScreen = document.querySelector('.screen.active');
+            const nextScreen = document.getElementById(screenId);
+
+            logEvent('NAVIGATE', screenId.toUpperCase());
+
+            currentScreen.classList.remove('active');
+            setTimeout(() => {
+                nextScreen.classList.add('active');
+                nextScreen.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 150);
+        }
+
+        // Loading functions
+        function showLoading() {
+            document.getElementById('loadingScreen').classList.remove('hidden');
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingScreen').classList.add('hidden');
+        }
+
+        // Authentication functions
+        async function login() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const errorDiv = document.getElementById('loginError');
+
+            errorDiv.classList.add('hidden');
+            showLoading();
+
+            try {
+                const response = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    authToken = data.token;
+                    currentUser = data.user;
+                    document.getElementById('userName').textContent = currentUser.firstName;
+
+                    // Load dashboard data
+                    await loadDashboard();
+                    hideLoading();
+                    navigateTo('dashboard');
+                    logEvent('LOGIN_SUCCESS', 'AUTH');
+                } else {
+                    hideLoading();
+                    errorDiv.textContent = data.error || 'Login failed';
+                    errorDiv.classList.remove('hidden');
+                    logEvent('LOGIN_FAILED', 'AUTH');
+                }
+            } catch (error) {
+                hideLoading();
+                console.error('Login error:', error);
+                errorDiv.textContent = 'Network error. Please try again.';
+                errorDiv.classList.remove('hidden');
+                logEvent('LOGIN_ERROR', 'AUTH');
+            }
+        }
+
+        async function loadDashboard() {
+            try {
+                const response = await fetch(`${API_BASE}/patient/dashboard`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    currentPoints = data.currentPoints;
+                    document.getElementById('pointsDisplay').textContent = currentPoints;
+
+                    // Count completed tests from recent activity
+                    const testCompletions = data.recentActivity.filter(
+                        activity => activity.transaction_type === 'test_completion'
+                    ).length;
+                    testCount = testCompletions;
+                    document.getElementById('testCount').textContent = testCount;
+
+                    updateRouletteButton();
+                } else {
+                    console.error('Dashboard load failed');
+                }
+            } catch (error) {
+                console.error('Dashboard load error:', error);
+            }
+        }
+
+        function logout() {
+            authToken = null;
+            currentUser = null;
+            currentPoints = 0;
+            testCount = 0;
+            document.getElementById('loginEmail').value = '';
+            document.getElementById('loginPassword').value = '';
+            document.getElementById('pointsDisplay').textContent = '0';
+            document.getElementById('testCount').textContent = '0';
+            navigateTo('login');
+            logEvent('LOGOUT', 'AUTH');
+        }
+
+        // Drug test simulation
+        async function startDrugTest() {
+            logEvent('DRUG_TEST_STARTED', 'TESTS');
+            showLoading();
+
+            // Simulate test process
+            setTimeout(async () => {
+                try {
+                    const response = await fetch(`${API_BASE}/patient/drug-test/submit`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${authToken}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            kit_qr_code: 'KIT-' + Date.now(),
+                            cpss_id: 'zach-cpss-id',
+                            video_session_id: 'session-' + Date.now(),
+                            session_duration_minutes: 5
+                        })
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        currentPoints = data.newBalance;
+                        testCount++;
+                        document.getElementById('pointsDisplay').textContent = currentPoints;
+                        document.getElementById('testCount').textContent = testCount;
+                        updateRouletteButton();
+                        hideLoading();
+                        navigateTo('testSuccess');
+                        logEvent('DRUG_TEST_COMPLETED', 'TESTS');
+                    } else {
+                        hideLoading();
+                        alert('Test submission failed. Please try again.');
+                    }
+                } catch (error) {
+                    hideLoading();
+                    console.error('Test submission error:', error);
+                    alert('Network error. Please try again.');
+                }
+            }, 2000);
+        }
+
+        // Roulette functions
+        function updateRouletteButton() {
+            const button = document.getElementById('rouletteBtn');
+            if (currentPoints >= 25) {
+                button.classList.remove('opacity-50', 'cursor-not-allowed');
+                button.disabled = false;
+            } else {
+                button.classList.add('opacity-50', 'cursor-not-allowed');
+                button.disabled = true;
+            }
+        }
+
+        function checkRoulette() {
+            if (currentPoints >= 25) {
+                document.getElementById('rouletteModal').classList.remove('hidden');
+                logEvent('ROULETTE_OPENED', 'WALLET');
+            } else {
+                alert(`You need ${25 - currentPoints} more points to spin the roulette!`);
+            }
+        }
+
+        async function spinRoulette() {
+            const button = document.getElementById('spinButton');
+            const wheel = document.getElementById('rouletteWheel');
+
+            button.disabled = true;
+            button.textContent = '🎰 SPINNING... 🎰';
+
+            try {
+                const response = await fetch(`${API_BASE}/patient/roulette/spin`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+
+                    // Animate wheel
+                    const finalRotation = 1800 + Math.random() * 360;
+                    wheel.style.transform = `rotate(${finalRotation}deg)`;
+
+                    setTimeout(() => {
+                        currentPoints = data.newBalance;
+                        document.getElementById('pointsDisplay').textContent = currentPoints;
+                        document.getElementById('winAmount').textContent = `YOU WON $${data.winAmount}!`;
+                        document.getElementById('spinResult').classList.remove('hidden');
+                        button.classList.add('hidden');
+                        updateRouletteButton();
+                        logEvent(`ROULETTE_WON_$${data.winAmount}`, 'WALLET');
+                    }, 3000);
+                } else {
+                    button.disabled = false;
+                    button.textContent = '🎰 Spin Now! 🎰';
+                    alert('Spin failed. Please try again.');
+                }
+            } catch (error) {
+                console.error('Roulette spin error:', error);
+                button.disabled = false;
+                button.textContent = '🎰 Spin Now! 🎰';
+                alert('Network error. Please try again.');
+            }
+        }
+
+        function closeRoulette() {
+            document.getElementById('rouletteModal').classList.add('hidden');
+            document.getElementById('spinResult').classList.add('hidden');
+            document.getElementById('spinButton').classList.remove('hidden');
+            document.getElementById('spinButton').disabled = false;
+            document.getElementById('spinButton').textContent = '🎰 Spin Now! 🎰';
+
+            // Reset wheel
+            const wheel = document.getElementById('rouletteWheel');
+            wheel.style.transform = 'rotate(0deg)';
+            wheel.style.transition = 'none';
+            setTimeout(() => {
+                wheel.style.transition = 'transform 3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+            }, 100);
+        }
+
+        // Messages functions
+        async function loadMessages() {
+            try {
+                const response = await fetch(`${API_BASE}/patient/messages`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const container = document.getElementById('messagesContainer');
+
+                    if (data.messages && data.messages.length > 0) {
+                        container.innerHTML = data.messages.map(msg => `
+                            <div class="chat-bubble-received p-3">
+                                <div class="flex items-start space-x-2">
+                                    <div class="w-6 h-6 bg-teal-500 rounded-full flex items-center justify-center text-white text-xs font-semibold">
+                                        ${msg.first_name[0]}
+                                    </div>
+                                    <div>
+                                        <p class="text-xs text-gray-500 mb-1">${msg.first_name} (${msg.role.toUpperCase()})</p>
+                                        <p class="text-sm">${msg.content}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('');
+                    } else {
+                        container.innerHTML = `
+                            <div class="text-center p-6 text-gray-500">
+                                <p>No messages yet. Start a conversation with your care team!</p>
+                            </div>
+                        `;
+                    }
+                } else {
+                    console.error('Messages load failed');
+                }
+            } catch (error) {
+                console.error('Messages load error:', error);
+            }
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const content = input.value.trim();
+
+            if (content) {
+                try {
+                    const response = await fetch(`${API_BASE}/patient/messages`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${authToken}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ content })
+                    });
+
+                    if (response.ok) {
+                        input.value = '';
+                        loadMessages(); // Refresh messages
+                        logEvent('MESSAGE_SENT', 'CHAT');
+                    } else {
+                        alert('Message failed to send. Please try again.');
+                    }
+                } catch (error) {
+                    console.error('Send message error:', error);
+                    alert('Network error. Please try again.');
+                }
+            }
+        }
+
+        // Analytics function
+        function logEvent(action, screen) {
+            console.log(`[Moonlit Analytics] ${action} - Screen: ${screen} - Time: ${new Date().toISOString()}`);
+        }
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function () {
+            logEvent('APP_LOADED', 'LOGIN');
+
+            // Load messages when messages screen is shown
+            const messagesObserver = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.target.id === 'messages' && mutation.target.classList.contains('active')) {
+                        loadMessages();
+                    }
+                });
+            });
+
+            const messagesScreen = document.getElementById('messages');
+            messagesObserver.observe(messagesScreen, { attributes: true, attributeFilter: ['class'] });
+
+            // Allow Enter key to send message
+            document.getElementById('messageInput').addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
