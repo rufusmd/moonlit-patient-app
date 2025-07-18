@@ -12,7 +12,6 @@
                 extend: {
                     colors: {
                         'teal': {
-                            400: '#2dd4bf',
                             500: '#14b8a6',
                             600: '#0d9488',
                             700: '#0f766e'
@@ -27,13 +26,11 @@
             opacity: 0;
             transform: translateY(20px);
             transition: all 0.3s ease-in-out;
-            display: none;
         }
 
         .screen.active {
             opacity: 1;
             transform: translateY(0);
-            display: flex;
         }
 
         .fade-in {
@@ -116,11 +113,6 @@
                     /* $30 - 10% */
                 );
             transition: transform 3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-        }
-
-        .roulette-wheel.spinning {
-            box-shadow: 0 0 30px rgba(59, 130, 246, 0.5);
         }
 
         .roulette-numbers {
@@ -144,79 +136,44 @@
             left: 50%;
         }
 
-        /* Position numbers at the center of each color section */
         .roulette-number:nth-child(1) {
             transform: translate(-50%, -50%) rotate(18deg) translateY(-5rem) rotate(-18deg);
         }
 
-        /* $5 at 18° */
         .roulette-number:nth-child(2) {
             transform: translate(-50%, -50%) rotate(54deg) translateY(-5rem) rotate(-54deg);
         }
 
-        /* $10 at 54° */
         .roulette-number:nth-child(3) {
             transform: translate(-50%, -50%) rotate(90deg) translateY(-5rem) rotate(-90deg);
         }
 
-        /* $5 at 90° */
         .roulette-number:nth-child(4) {
             transform: translate(-50%, -50%) rotate(126deg) translateY(-5rem) rotate(-126deg);
         }
 
-        /* $15 at 126° */
         .roulette-number:nth-child(5) {
             transform: translate(-50%, -50%) rotate(162deg) translateY(-5rem) rotate(-162deg);
         }
 
-        /* $5 at 162° */
         .roulette-number:nth-child(6) {
             transform: translate(-50%, -50%) rotate(198deg) translateY(-5rem) rotate(-198deg);
         }
 
-        /* $10 at 198° */
         .roulette-number:nth-child(7) {
             transform: translate(-50%, -50%) rotate(234deg) translateY(-5rem) rotate(-234deg);
         }
 
-        /* $5 at 234° */
         .roulette-number:nth-child(8) {
             transform: translate(-50%, -50%) rotate(270deg) translateY(-5rem) rotate(-270deg);
         }
 
-        /* $25 at 270° */
         .roulette-number:nth-child(9) {
             transform: translate(-50%, -50%) rotate(306deg) translateY(-5rem) rotate(-306deg);
         }
 
-        /* $5 at 306° */
         .roulette-number:nth-child(10) {
             transform: translate(-50%, -50%) rotate(342deg) translateY(-5rem) rotate(-342deg);
-        }
-
-        /* $30 at 342° */
-
-        /* Enhanced button hover states */
-        #spinButton:hover:not(:disabled) {
-            transform: scale(1.02);
-            box-shadow: 0 4px 20px rgba(168, 85, 247, 0.4);
-        }
-
-        /* Win announcement animation */
-        @keyframes winPulse {
-
-            0%,
-            100% {
-                transform: scale(1);
-            }
-
-            50% {
-                transform: scale(1.05);
-            }
-        }
-
-        .win-announcement {
-            animation: winPulse 0.6s ease-in-out 3;
         }
     </style>
 </head>
@@ -388,7 +345,7 @@
 
                 <div id="spinResult" class="hidden mt-6 text-center">
                     <div class="text-6xl mb-2">🎊</div>
-                    <h3 class="text-2xl font-bold text-green-600 mb-2 win-announcement" id="winAmount">YOU WON $15!</h3>
+                    <h3 class="text-2xl font-bold text-green-600 mb-2" id="winAmount">YOU WON $15!</h3>
                     <p class="text-gray-600 mb-4">Money added to your account!</p>
                     <button onclick="closeRoulette()" class="bg-teal-500 text-white px-6 py-3 rounded-lg font-semibold">
                         Awesome!
@@ -576,12 +533,9 @@
         function updateRouletteButton() {
             const button = document.getElementById('rouletteBtn');
             if (currentPoints >= 25) {
-                button.textContent = '🎰 Spin Roulette (25 pts)';
                 button.classList.remove('opacity-50', 'cursor-not-allowed');
                 button.disabled = false;
             } else {
-                const needed = 25 - currentPoints;
-                button.textContent = `🔒 Earn ${needed} more points to spin`;
                 button.classList.add('opacity-50', 'cursor-not-allowed');
                 button.disabled = true;
             }
@@ -602,7 +556,6 @@
 
             button.disabled = true;
             button.textContent = '🎰 SPINNING... 🎰';
-            wheel.classList.add('spinning');
 
             try {
                 const response = await fetch(`${API_BASE}/patient/roulette/spin`, {
@@ -616,71 +569,28 @@
                 if (response.ok) {
                     const data = await response.json();
 
-                    // Define wheel sections with EXACT angles that match the CSS
-                    const wheelSections = [
-                        { angle: 18, prize: 5 },   // $5 section 1
-                        { angle: 54, prize: 10 },  // $10 section 1
-                        { angle: 90, prize: 5 },   // $5 section 2
-                        { angle: 126, prize: 15 }, // $15 section
-                        { angle: 162, prize: 5 },  // $5 section 3
-                        { angle: 198, prize: 10 }, // $10 section 2
-                        { angle: 234, prize: 5 },  // $5 section 4
-                        { angle: 270, prize: 25 }, // $25 section
-                        { angle: 306, prize: 5 },  // $5 section 5
-                        { angle: 342, prize: 30 }  // $30 section
-                    ];
+                    // Animate wheel
+                    const finalRotation = 1800 + Math.random() * 360;
+                    wheel.style.transform = `rotate(${finalRotation}deg)`;
 
-                    // Find the section that matches the API response
-                    const winningSection = wheelSections.find(section => section.prize === data.winAmount);
-
-                    if (winningSection) {
-                        // Calculate PRECISE final rotation
-                        const baseRotations = 1800; // 5 full spins for visual effect
-                        const targetAngle = 360 - winningSection.angle; // Bring section to pointer
-                        const finalRotation = baseRotations + targetAngle;
-
-                        // Animate wheel with pixel-perfect positioning
-                        wheel.style.transform = `rotate(${finalRotation}deg)`;
-
-                        setTimeout(() => {
-                            currentPoints = data.newBalance;
-                            document.getElementById('pointsDisplay').textContent = currentPoints;
-                            document.getElementById('winAmount').textContent = `YOU WON $${data.winAmount}!`;
-                            document.getElementById('spinResult').classList.remove('hidden');
-                            button.classList.add('hidden');
-                            wheel.classList.remove('spinning');
-                            updateRouletteButton();
-
-                            // Add haptic feedback on mobile
-                            if (navigator.vibrate) {
-                                navigator.vibrate(200);
-                            }
-
-                            logEvent(`ROULETTE_WON_$${data.winAmount}`, 'WALLET', {
-                                winAmount: data.winAmount,
-                                newPoints: currentPoints,
-                                targetAngle: winningSection.angle,
-                                finalRotation: finalRotation
-                            });
-                        }, 3000);
-                    } else {
-                        console.error('No matching wheel section found for prize:', data.winAmount);
-                        button.disabled = false;
-                        button.textContent = '🎰 Spin Now! 🎰';
-                        wheel.classList.remove('spinning');
-                        alert('Spin failed. Please try again.');
-                    }
+                    setTimeout(() => {
+                        currentPoints = data.newBalance;
+                        document.getElementById('pointsDisplay').textContent = currentPoints;
+                        document.getElementById('winAmount').textContent = `YOU WON $${data.winAmount}!`;
+                        document.getElementById('spinResult').classList.remove('hidden');
+                        button.classList.add('hidden');
+                        updateRouletteButton();
+                        logEvent(`ROULETTE_WON_$${data.winAmount}`, 'WALLET');
+                    }, 3000);
                 } else {
                     button.disabled = false;
                     button.textContent = '🎰 Spin Now! 🎰';
-                    wheel.classList.remove('spinning');
                     alert('Spin failed. Please try again.');
                 }
             } catch (error) {
                 console.error('Roulette spin error:', error);
                 button.disabled = false;
                 button.textContent = '🎰 Spin Now! 🎰';
-                wheel.classList.remove('spinning');
                 alert('Network error. Please try again.');
             }
         }
@@ -694,7 +604,6 @@
 
             // Reset wheel
             const wheel = document.getElementById('rouletteWheel');
-            wheel.classList.remove('spinning');
             wheel.style.transform = 'rotate(0deg)';
             wheel.style.transition = 'none';
             setTimeout(() => {
@@ -775,24 +684,8 @@
         }
 
         // Analytics function
-        function logEvent(action, screen, details = {}) {
-            const event = {
-                timestamp: new Date().toISOString(),
-                action: action,
-                screen: screen,
-                details: details,
-                sessionId: getSessionId()
-            };
-            console.log('[Moonlit Analytics]', event);
-        }
-
-        function getSessionId() {
-            let sessionId = localStorage.getItem('moonlit-session');
-            if (!sessionId) {
-                sessionId = 'session-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-                localStorage.setItem('moonlit-session', sessionId);
-            }
-            return sessionId;
+        function logEvent(action, screen) {
+            console.log(`[Moonlit Analytics] ${action} - Screen: ${screen} - Time: ${new Date().toISOString()}`);
         }
 
         // Initialize app
